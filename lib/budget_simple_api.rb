@@ -18,18 +18,30 @@ class BudgetSimpleAPI
   end
 
   def validate
-    fetch("users", function: "validate")
+    fetch("users", "object", function: "validate")
   end
 
   def budget_summary
-    fetch("budget", function: "summary")
+    fetch("budget", "object", function: "summary")
+  end
+
+  def full_budget
+    fetch("budget", "array", function: "getBudget")
+  end
+
+  def budgeted
+    fetch("budget", "array", function: "getBudgeted")
+  end
+
+  def unbudgeted
+    fetch("budget", "array", function: "getUnbudgeted")
   end
 
   private
 
-  def fetch(path, params)
+  def fetch(path, expected_response_type, params)
     request = build_request(path, params)
-    send_request_and_get_response(request)
+    send_request_and_get_response(request, expected_response_type)
   end
 
   def build_request(path, params)
@@ -42,11 +54,15 @@ class BudgetSimpleAPI
     request
   end
 
-  def send_request_and_get_response(request)
+  def send_request_and_get_response(request, expected_response_type)
     response = Net::HTTP.start(BSHOSTNAME, nil, :use_ssl => true) { |http|
       http.request(request) 
     }
-    JSON.parse(response.body)
+    begin
+      JSON.parse(response.body)
+    rescue JSON::ParserError
+      expected_response_type == "object" ? {} : []
+    end
   end
 
   def authenticate!
