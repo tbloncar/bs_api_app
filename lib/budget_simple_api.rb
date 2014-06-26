@@ -1,6 +1,7 @@
 require 'net/http'
 require 'httparty'
 require 'json'
+require 'securerandom'
 
 class BudgetSimpleAPI
   include HTTParty
@@ -9,9 +10,9 @@ class BudgetSimpleAPI
 
   attr_reader :email, :password, :token, :secret
 
-  def initialize(email, password)
+  def initialize(email:, password:)
     @base_uri = "https://#{BSHOSTNAME}/api"
-    @email = email
+    @email = email 
     @password = password
     @salt = SecureRandom.hex(10)
     authenticate!
