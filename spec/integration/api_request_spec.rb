@@ -1,7 +1,7 @@
 require_relative '../../lib/budget_simple_api'
 
 describe 'API communication' do
-  let(:api) { BudgetSimpleAPI.new(email: "travis@example.com", password: "password") }
+  let(:api) { BudgetSimple::API.new(email: "travis@example.com", password: "password") }
 
   it 'should authenticate' do
     expect(api.token).not_to eq(nil)
